@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>	//inet_addr
 #include <string.h>
 
 int main(int argc, char **argv) {
-  int socket_desc;
+  int socket_desc, on = 1;
   char *message = "xyu1";
   struct sockaddr_in server_addr;
   {
@@ -16,6 +17,10 @@ int main(int argc, char **argv) {
   socket_desc = socket(AF_INET, SOCK_STREAM, 0);
   if (-1 == socket_desc) {
     printf("Couldn't create a socket\n");
+    return -1;
+  }
+  if (ioctl(socket_desc, FIONBIO, (char*)&on) < 0) {
+    printf("Couldn't switch no non-blocking mode\n");
     return -1;
   }
   if (connect(socket_desc, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
