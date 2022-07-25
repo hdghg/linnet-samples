@@ -25,17 +25,36 @@ int main(int argc, char **argv) {
     printf("Couldn't create a socket\n");
     return -1;
   }
-  //if (ioctl(socket_desc, FIONBIO, (char*)&on) < 0) {
-  //  printf("Couldn't switch no non-blocking mode\n");
-  //  return -1;
-  //}
-  if (connect(socket_desc, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-    // errno = 115 (EINPROGRESS)
-    printf("Connect failed: %d\n", errno);
+  if (ioctl(socket_desc, FIONBIO, (char*)&on) < 0) {
+    printf("Couldn't switch no non-blocking mode\n");
     return -1;
   }
-  printf("Connected successfully\n");
   fds[0].fd = socket_desc;
+  fds[0].events = POLLOUT;
+  res = poll(fds, 1, timeout);
+  if (res < 0) {
+    printf("Poll failed with error %d\n", res);
+    return -1;
+  }
+  res = connect(socket_desc, (struct sockaddr *)&server_addr, sizeof(server_addr));
+  if (res < 0) {
+    if (EINPROGRESS == errno) {
+      printf("Connecting to ?\n");
+      res = poll(fds, 1, timeout);
+      if (res < 0) {
+          printf("Failed to complete non-blocking connect operation. Error %d\n", errno);
+          return -1;
+      } else if (0 == res) {
+          printf("Connection timeout\n");
+          return -1;
+      } else if (1 == res) {
+          printf("Connection completed successfully\n");
+      }
+    } else {
+      printf("Connect failed: %d\n", errno);
+      return -1;
+    }
+  }
   fds[0].events = POLLIN;
 
   res = poll(fds, 1, timeout);

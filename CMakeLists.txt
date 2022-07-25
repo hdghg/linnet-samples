@@ -4,4 +4,4 @@ cmake_minimum_required(VERSION 3.10)
 project(tcpclient)
 
 # add the executable
-add_executable(tcpclient src/main.c)
+add_executable(tcpclient src/main.c src/tcpclientloop.c src/tcpclientloop.h)
