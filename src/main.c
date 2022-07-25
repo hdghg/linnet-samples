@@ -6,6 +6,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include "socket/common.h"
+
 int main(int argc, char **argv) {
   int socket_desc, on = 1, timeout = 3 * 60 * 1000;
   char *message = "xyu1";
@@ -20,9 +22,7 @@ int main(int argc, char **argv) {
     server_addr.sin_port = htons(7171);
   }
 
-  socket_desc = socket(AF_INET, SOCK_STREAM, 0);
-  if (-1 == socket_desc) {
-    printf("Couldn't create a socket\n");
+  if (-1 == CreateSocket(&socket_desc, AF_INET, SOCK_STREAM, 0)) {
     return -1;
   }
   if (ioctl(socket_desc, FIONBIO, (char*)&on) < 0) {
