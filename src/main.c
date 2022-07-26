@@ -7,20 +7,23 @@
 #include <errno.h>
 
 #include "socket/common.h"
+#include "args.h"
 
 int main(int argc, char **argv) {
   int socket_desc, on = 1, timeout = 3 * 60 * 1000;
   char *message = "xyu1";
   struct pollfd fds[1];
   struct sockaddr_in server_addr;
+  struct samples_args args = {"127.0.0.1"};
   int res;
   char buffer[130];
   {
     memset(buffer, 0, sizeof(buffer));
-    server_addr.sin_addr.s_addr = inet_addr("192.168.1.156");
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(7171);
   }
+  ParseArgs(&args, argc, argv);
+  server_addr.sin_addr.s_addr = inet_addr(args.address);
 
   if (-1 == CreateSocket(&socket_desc, AF_INET, SOCK_STREAM, 0)) {
     return -1;
@@ -39,7 +42,7 @@ int main(int argc, char **argv) {
   res = connect(socket_desc, (struct sockaddr *)&server_addr, sizeof(server_addr));
   if (res < 0) {
     if (EINPROGRESS == errno) {
-      printf("Connecting to ?\n");
+      printf("Connecting to %s\n", args.address);
       res = poll(fds, 1, timeout);
       if (res < 0) {
           printf("Failed to complete non-blocking connect operation. Error %d\n", errno);
