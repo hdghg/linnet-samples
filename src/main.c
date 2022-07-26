@@ -45,13 +45,13 @@ int main(int argc, char **argv) {
       printf("Connecting to %s\n", args.address);
       res = poll(fds, 1, timeout);
       if (res < 0) {
-          printf("Failed to complete non-blocking connect operation. Error %d\n", errno);
-          return -1;
+        printf("Failed to complete non-blocking connect operation. Error %d\n", errno);
+        return -1;
       } else if (0 == res) {
-          printf("Connection timeout\n");
-          return -1;
+        printf("Connection timeout\n");
+        return -1;
       } else if (1 == res) {
-          printf("Connection completed successfully\n");
+        printf("Connection completed successfully\n");
       }
     } else {
       printf("Connect failed: %d\n", errno);
@@ -79,9 +79,7 @@ int main(int argc, char **argv) {
     return 0;
   }
   printf("%d bytes received: %s\n", res, buffer);
-  
-  
-  
+
   return 0;
 }
 
