@@ -1,21 +1,19 @@
-//
-// Created by sieben on 26.07.2022.
-//
-
-#include <stdio.h>
-#include <sys/socket.h>
-#include <errno.h>
 #include "common.h"
+#include <errno.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
 
 int CreateSocket(int *sock, int family, int type, int protocol) {
-    *sock = socket(family, type, protocol);
-    if (-1 == *sock) {
-        if (EPROTONOSUPPORT == errno) {
-            printf("Protocol is not supported by the system\n");
-        } else {
-            printf("CreateSocket() failed with error code %d\n", errno);
-        }
-        return -1;
-    }
-    return 0;
+  int synRetries = 2;
+  *sock = socket(family, type, protocol);
+  if (-1 == *sock) {
+    printf("Create socket failed: [%d] %s\n", errno, strerror(errno));
+    return -1;
+  }
+  // set connection timeout to ~7 seconds
+  setsockopt(*sock, IPPROTO_TCP, TCP_SYNCNT, &synRetries, sizeof(synRetries));
+  return 0;
 }
