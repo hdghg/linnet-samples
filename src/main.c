@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "args.h"
+#include "../common/args.h"
 #include "tcpclientloop.h"
 
 int main(int argc, char **argv) {
