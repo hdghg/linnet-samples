@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+project(Linnet-Samples)
 
-# set the project name
-project(tcpclient)
-
-# add the executable
-add_executable(tcpclient src/main.c src/tcpclientloop.c src/tcpclientloop.h src/socket/common.c src/socket/common.h src/args.c src/args.h)
+add_subdirectory(common common)
+add_subdirectory(tcpclient tcpclient)
