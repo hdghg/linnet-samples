@@ -13,7 +13,9 @@ void nonblock() {
   tcgetattr(STDIN_FILENO, &ttystate);
 
   //turn off canonical mode
-  ttystate.c_lflag &= ~(unsigned int) ICANON;
+  printf("flag: %u\n", ttystate.c_lflag);
+  ttystate.c_lflag &= ~ICANON;
+  ttystate.c_lflag &= ~ECHO;
   //minimum of number input read.
   ttystate.c_cc[VMIN] = 1;
   tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
@@ -22,11 +24,18 @@ void nonblock() {
 int main() {
   char line[129];
   struct pollfd fds[1] = {{STDIN_FILENO, POLLIN}};
-  int res;
+  int res, c = 0;
   nonblock();
   printf("Starting tcpserv\n");
-  //  res = poll(fds, 1, 3000);
-  //  printf("Res: %d\n", res);
+//  while (c != ']') {
+//    res = poll(fds, 1, 3000);
+//    printf("Res: %d\n", res);
+//    c = getchar();
+//    if (127 == c) { // backspace
+//      printf("Next is: %d\n", getchar());
+//    }
+//    printf("Char: %d\n", c);
+//  }
 
 
   memset(line, '\0', sizeof(line));

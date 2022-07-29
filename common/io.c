@@ -14,7 +14,7 @@ char* NbReadLine(char *dest) {
   int timeout = 125;
   struct pollfd fds[1];
   size_t len;
-  char c;
+  int c;
   {
     fds[0].fd = STDIN_FILENO;
     fds[0].events = POLLIN;
@@ -27,8 +27,8 @@ char* NbReadLine(char *dest) {
       return NULL;
     }
     // Backspace
-    if (8 == c && 0 < len) {
-      printf("%c %c", c, c);
+    if (127 == c && 0 < len) {
+      printf("%c %c", '\010', '\010');
       dest[len - 1] = '\0';
       return NULL;
     }
@@ -37,8 +37,8 @@ char* NbReadLine(char *dest) {
       return dest;
     }
     if (len < MESSAGE_SIZE) {
-      dest[len] = c;
-//      printf("%c", c);
+      dest[len] = (char) c;
+      printf("%c", c);
     }
   }
   return NULL;
